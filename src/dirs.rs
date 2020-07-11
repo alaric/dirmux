@@ -7,28 +7,39 @@ use std::io::BufReader;
 use std::path::Path;
 use std::path::PathBuf;
 
+/// File format for the config file.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct FileFormat {
     tags: HashMap<String, Vec<PathBuf>>,
 }
 
 impl FileFormat {
+    /// Produce a blank/empty file
     pub fn blank() -> Self {
         FileFormat {
-            tags: HashMap::new()
+            tags: HashMap::new(),
         }
     }
 
+    /// Add a `tag` for the specified `path`
     pub fn add(&mut self, tag: String, path: &PathBuf) {
-        self.tags.entry(tag).or_insert(vec![]).insert(0, path.clone());
+        self.tags
+            .entry(tag)
+            .or_insert(vec![])
+            .insert(0, path.clone());
     }
 
+    /// Remove the `tag` for the specified `path`
     pub fn remove(&mut self, tag: String, path: &PathBuf) {
         self.tags.entry(tag).or_insert(vec![]).retain(|x| path != x);
         self.tags.retain(|_, v| v.len() > 0);
     }
 
-    pub fn retain<F>(&mut self, f: F) where F: Fn(&PathBuf) -> bool {
+    /// Retain only the tagged paths that match the provided lambda
+    pub fn retain<F>(&mut self, f: F)
+    where
+        F: Fn(&PathBuf) -> bool,
+    {
         for (_, v) in &mut self.tags {
             v.retain(|x| f(x));
         }
@@ -56,8 +67,7 @@ pub fn get_dirs(file: FileFormat, filters: Vec<&str>) -> Result<Vec<PathBuf>> {
         for i in file.tags {
             dirs.extend_from_slice(&i.1);
         }
-    }
-    else {
+    } else {
         for i in filters {
             match file.tags.get(i) {
                 Some(res) => dirs.extend_from_slice(res),

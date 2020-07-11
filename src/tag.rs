@@ -1,5 +1,5 @@
-use crate::dirs::FileFormat;
 use crate::dirs::write_file;
+use crate::dirs::FileFormat;
 use crate::options::TagSubcommands::*;
 use crate::options::*;
 use anyhow::Result;
@@ -40,7 +40,7 @@ fn gc(file: &FileFormat) -> Result<FileFormat> {
 fn test_add() -> Result<()> {
     let opts = TagAddOpts {
         tag: String::from("dev"),
-        path: None
+        path: None,
     };
     let mut prior = FileFormat::blank();
     let dir = std::env::current_dir()?;
@@ -56,7 +56,7 @@ fn test_add() -> Result<()> {
 fn test_add_exact() -> Result<()> {
     let opts = TagAddOpts {
         tag: String::from("dev"),
-        path: Some(PathBuf::from("/dev/null"))
+        path: Some(PathBuf::from("/dev/null")),
     };
     let mut prior = FileFormat::blank();
     let dir = std::env::current_dir()?;
@@ -72,11 +72,11 @@ fn test_add_exact() -> Result<()> {
 fn test_remove() -> Result<()> {
     let opts_add = TagAddOpts {
         tag: String::from("dev"),
-        path: None
+        path: None,
     };
     let opts_rem = TagRemoveOpts {
         tag: String::from("dev"),
-        path: None
+        path: None,
     };
     let prior = FileFormat::blank();
     let dir = std::env::current_dir()?;
@@ -93,7 +93,10 @@ fn test_gc() -> Result<()> {
     let dir = std::env::current_dir()?;
     expected.add(String::from("exists"), &dir);
     let mut filled = expected.clone();
-    filled.add(String::from("non-existing"), &PathBuf::from("/dev/does/not/exist"));
+    filled.add(
+        String::from("non-existing"),
+        &PathBuf::from("/dev/does/not/exist"),
+    );
     assert_ne!(expected, filled);
     let result = gc(&filled)?;
     assert_eq!(expected, result);

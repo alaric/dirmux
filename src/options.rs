@@ -1,5 +1,5 @@
-use structopt::StructOpt;
 use std::path::PathBuf;
+use structopt::StructOpt;
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct Options {
@@ -29,7 +29,7 @@ pub enum TagSubcommands {
     ///
     /// This option will check the existence of all the directories and remove tags from
     /// non-existing directories.
-    Gc
+    Gc,
 }
 
 #[derive(Debug, PartialEq, StructOpt)]
@@ -44,13 +44,11 @@ pub struct TagRemoveOpts {
     pub path: Option<PathBuf>,
 }
 
-
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct TagOpts {
     #[structopt(subcommand)]
     pub action: TagSubcommands,
 }
-
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct ExecOpts {
@@ -61,5 +59,5 @@ pub struct ExecOpts {
 #[derive(Debug, PartialEq, StructOpt)]
 pub enum ExecCmd {
     #[structopt(external_subcommand)]
-    RawCommand(Vec<String>)
+    RawCommand(Vec<String>),
 }

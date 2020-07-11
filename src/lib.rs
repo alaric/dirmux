@@ -1,20 +1,28 @@
+use anyhow::Result;
 use async_trait::async_trait;
 use std::path::PathBuf;
-use anyhow::Result;
 use tokio::sync::mpsc::UnboundedSender;
 
+/// File handling and production of directories to work with
 pub mod dirs;
+/// Command-line execution runners
 pub mod exec;
-pub mod options;
+/// Creating different behaviours from the program options
 pub mod factory;
-pub mod tag;
+/// Program and command line options
+pub mod options;
+/// Render the directory's outputs as text
 pub mod renderers;
-
-pub use options::Options;
+/// Managing the tags
+pub mod tag;
 
 #[async_trait]
 pub trait DirRunner: Send + Sync {
-    async fn process(&self, dir: PathBuf, sender: UnboundedSender<CommandMessage>) -> Result<CommandOutput>;
+    async fn process(
+        &self,
+        dir: PathBuf,
+        sender: UnboundedSender<CommandMessage>,
+    ) -> Result<CommandOutput>;
 }
 
 pub trait Renderer {
@@ -43,8 +51,7 @@ pub struct CommandOutput {
     dir: PathBuf,
 }
 
-pub struct DebugRenderer {
-}
+pub struct DebugRenderer {}
 
 impl Renderer for DebugRenderer {
     fn process(&self, msg: CommandMessage) -> Result<()> {

@@ -1,10 +1,10 @@
-use anyhow::Result;
 use anyhow::Context;
-use std::path::PathBuf;
-use tokio::sync::mpsc::unbounded_channel;
-use structopt::StructOpt;
+use anyhow::Result;
+use dirmux::options::Options;
 use dirmux::CommandMessage;
-use dirmux::Options;
+use std::path::PathBuf;
+use structopt::StructOpt;
+use tokio::sync::mpsc::unbounded_channel;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
         None => PathBuf::from("/tmp/").join(".dirmux.json"),
     };
     let file = dirmux::dirs::read_file(&filename)
-                .with_context(|| format!("Couldn't read config file: {}", filename.display()))?;
+        .with_context(|| format!("Couldn't read config file: {}", filename.display()))?;
 
     // Short circuit tag command
     if let dirmux::options::Subcommands::Tag(tagopts) = &opts.cmd {
@@ -23,8 +23,7 @@ async fn main() -> Result<()> {
 
     let dirs = if let Some(t) = &opts.tag {
         dirmux::dirs::get_dirs(file, vec![&t])?
-    }
-    else {
+    } else {
         dirmux::dirs::get_dirs(file, vec![])?
     };
 
@@ -34,7 +33,10 @@ async fn main() -> Result<()> {
         let tx = tx.clone();
         let processor = processor.clone();
         tokio::spawn(async move {
-            let output = processor.process(dir, tx.clone()).await;
+            let directory = dir.clone();
+            let output = processor.process(dir, tx.clone()).await.with_context(|| {
+                format!("Processing failed for directory: {}", directory.display())
+            });
             // TODO Handle error case by wrapping in dir variable
             tx.send(CommandMessage::Final(output)).unwrap();
         });

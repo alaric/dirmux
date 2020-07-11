@@ -10,17 +10,17 @@ impl Renderer for SimpleSectionRender {
         match msg {
             CommandMessage::Final(Ok(msg)) => {
                 if msg.output.len() > 0 {
-                    println!("{}:", msg.dir.display());  
+                    println!("{}:", msg.dir.display());
                     print!("{}", msg.output);
                 }
                 if msg.error.len() > 0 {
-                    eprintln!("{}:", msg.dir.display());  
+                    eprintln!("{}:", msg.dir.display());
                     eprint!("{}", msg.error);
                 }
-            },
+            }
             CommandMessage::Final(Err(msg)) => {
                 eprintln!("Err: {}", msg);
-            },
+            }
             _ => {}
         }
         Ok(())
