@@ -16,8 +16,7 @@ pub struct CommandRunner {
 impl DirRunner for CommandRunner {
     async fn process(&self, dir: PathBuf, _sender: UnboundedSender<CommandMessage>) -> Result<CommandOutput> {
 
-        let mut cmd = self.cmd.clone();
-        if let Some((progname, cmd)) = cmd.split_first() {
+        if let Some((progname, cmd)) = self.cmd.split_first() {
             let output = Command::new(progname).args(cmd)
                             .current_dir(&dir)
                             .output();

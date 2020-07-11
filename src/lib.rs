@@ -6,12 +6,19 @@ use tokio::sync::mpsc::UnboundedSender;
 pub mod dirs;
 pub mod exec;
 pub mod options;
+pub mod factory;
+pub mod tag;
+pub mod renderers;
 
 pub use options::Options;
 
 #[async_trait]
-pub trait DirRunner {
+pub trait DirRunner: Send + Sync {
     async fn process(&self, dir: PathBuf, sender: UnboundedSender<CommandMessage>) -> Result<CommandOutput>;
+}
+
+pub trait Renderer {
+    fn process(&self, msg: CommandMessage) -> Result<()>;
 }
 
 #[derive(Debug)]
@@ -34,6 +41,16 @@ pub struct CommandOutput {
     output: String,
     error: String,
     dir: PathBuf,
+}
+
+pub struct DebugRenderer {
+}
+
+impl Renderer for DebugRenderer {
+    fn process(&self, msg: CommandMessage) -> Result<()> {
+        dbg!(&msg);
+        Ok(())
+    }
 }
 
 /*

@@ -3,6 +3,9 @@ use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct Options {
+    #[structopt(short)]
+    pub tag: Option<String>,
+
     #[structopt(subcommand)]
     pub cmd: Subcommands,
 }
@@ -31,24 +34,32 @@ pub enum TagSubcommands {
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct TagAddOpts {
-    tag: String,
+    pub tag: String,
+    pub path: Option<PathBuf>,
 }
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct TagRemoveOpts {
-    tag: String,
-    path: Option<PathBuf>,
+    pub tag: String,
+    pub path: Option<PathBuf>,
 }
 
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct TagOpts {
     #[structopt(subcommand)]
-    action: TagSubcommands,
+    pub action: TagSubcommands,
 }
 
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub struct ExecOpts {
-    cmd: Vector<String>
+    #[structopt(subcommand)]
+    pub cmd: ExecCmd,
+}
+
+#[derive(Debug, PartialEq, StructOpt)]
+pub enum ExecCmd {
+    #[structopt(external_subcommand)]
+    RawCommand(Vec<String>)
 }

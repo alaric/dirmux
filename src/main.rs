@@ -2,41 +2,37 @@ use anyhow::Result;
 use std::path::PathBuf;
 use tokio::sync::mpsc::unbounded_channel;
 use structopt::StructOpt;
-use dirmux::DirRunner;
 use dirmux::CommandMessage;
 use dirmux::Options;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let opts = dirmux::Options::from_args();
-    dbg!(&opts);
-    let file = dirmux::dirs::read_file(&PathBuf::from("/Users/alaric/.grconfig.json"))?;
-    let dirs = dirmux::dirs::get_dirs(file, vec![])?;
+    let opts = Options::from_args();
+    let filename = PathBuf::from("/Users/alaric/.grconfig.json"); 
+    let file = dirmux::dirs::read_file(&filename)?;
 
-    let cmd = match opts.cmd {
-        dirmux::options::Subcommands::RawCommand(cmd) => {
-            cmd
-        },
-        dirmux::options::Subcommands::Tag(tagcmd) => {
-            vec!["ls".into(), "-l".into()]
-        }
-    };
-    
-    let processor = dirmux::exec::CommandRunner { cmd };
+    // Short circuit tag command
+    if let dirmux::options::Subcommands::Tag(tagopts) = &opts.cmd {
+        return dirmux::tag::handle(&tagopts, &filename, &file);
+    }
+
+    let (processor, renderer) = dirmux::factory::create_processors(opts);
+    let dirs = dirmux::dirs::get_dirs(file, vec![])?;
     let (tx, mut rx) = unbounded_channel();
     for dir in dirs {
         let tx = tx.clone();
         let processor = processor.clone();
         tokio::spawn(async move {
             let output = processor.process(dir, tx.clone()).await;
+            // TODO Handle error case by wrapping in dir variable
             tx.send(CommandMessage::Final(output)).unwrap();
         });
     }
 
     drop(tx);
 
-    while let Some(res) = rx.recv().await {
-        println!("got = {:?}", res);
+    while let Some(msg) = rx.recv().await {
+        renderer.process(msg)?;
     }
 
     Ok(())
