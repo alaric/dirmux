@@ -14,3 +14,5 @@ tokio = { version = "0.2", features=["full"] }
 async-trait = "0.1"
 structopt = "0.3"
 dirs = "3.0"
+termion = "1.0"
+futures = "0.3"

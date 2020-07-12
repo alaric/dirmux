@@ -6,6 +6,9 @@ pub struct Options {
     #[structopt(short)]
     pub tag: Option<String>,
 
+    #[structopt(short,long, default_value="10")]
+    pub jobs: usize,
+
     #[structopt(subcommand)]
     pub cmd: Subcommands,
 }

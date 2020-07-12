@@ -5,6 +5,7 @@ use dirmux::CommandMessage;
 use std::path::PathBuf;
 use structopt::StructOpt;
 use tokio::sync::mpsc::unbounded_channel;
+use futures::stream::{self, StreamExt};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -27,22 +28,30 @@ async fn main() -> Result<()> {
         dirmux::dirs::get_dirs(file, vec![])?
     };
 
-    let (processor, renderer) = dirmux::factory::create_processors(opts);
+    let jobs = opts.jobs;
+    let (processor, renderer) = dirmux::factory::create_processors(opts)?;
     let (tx, mut rx) = unbounded_channel();
+    let mut futs = Vec::new();
     for dir in dirs {
         let tx = tx.clone();
         let processor = processor.clone();
-        tokio::spawn(async move {
+        let fut = async move {
             let directory = dir.clone();
             let output = processor.process(dir, tx.clone()).await.with_context(|| {
                 format!("Processing failed for directory: {}", directory.display())
             });
             // TODO Handle error case by wrapping in dir variable
             tx.send(CommandMessage::Final(output)).unwrap();
-        });
+        };
+        futs.push(fut);
     }
 
-    drop(tx);
+    tokio::spawn(async move {
+        stream::iter(futs).for_each_concurrent(jobs, |x| async move {
+            x.await;
+        }).await;
+        drop(tx);
+    });
 
     while let Some(msg) = rx.recv().await {
         renderer.process(msg)?;

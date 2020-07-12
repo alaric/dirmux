@@ -1,6 +1,7 @@
 use crate::CommandMessage;
 use crate::Renderer;
 use anyhow::Result;
+use termion::{color, style};
 
 #[derive(Default)]
 pub struct SimpleSectionRender {}
@@ -10,7 +11,7 @@ impl Renderer for SimpleSectionRender {
         match msg {
             CommandMessage::Final(Ok(msg)) => {
                 if msg.output.len() > 0 {
-                    println!("{}:", msg.dir.display());
+                    println!("{}{}{}:{}", color::Fg(color::Rgb(200, 196, 0)), style::Bold, msg.dir.display(), style::Reset);
                     print!("{}", msg.output);
                 }
                 if msg.error.len() > 0 {
