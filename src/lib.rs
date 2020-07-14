@@ -16,6 +16,8 @@ pub mod renderers;
 /// Managing the tags
 pub mod tag;
 
+pub mod cmds;
+
 #[async_trait]
 pub trait DirRunner: Send + Sync {
     async fn process(
@@ -60,20 +62,3 @@ impl Renderer for DebugRenderer {
     }
 }
 
-/*
-#[derive(Debug, Clone)]
-pub struct Multiplex {
-}
-
-#[async_trait]
-impl DirRunner for Multiplex {
-    async fn process(&self, dir: PathBuf) -> Result<Output> {
-
-        Ok(Output {
-            dir,
-            progress: 0,
-            output: "".into(),
-        })
-    }
-}
-*/

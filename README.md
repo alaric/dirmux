@@ -1,0 +1,3 @@
+# dirmux
+
+Directory multiplexer.

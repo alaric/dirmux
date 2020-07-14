@@ -15,6 +15,7 @@ pub struct Options {
 
 #[derive(Debug, PartialEq, StructOpt)]
 pub enum Subcommands {
+    Status(StatusOpts),
     /// Manipulate the tagged directories
     Tag(TagOpts),
     Exec(ExecOpts),
@@ -33,6 +34,10 @@ pub enum TagSubcommands {
     /// This option will check the existence of all the directories and remove tags from
     /// non-existing directories.
     Gc,
+}
+
+#[derive(Debug, PartialEq, StructOpt)]
+pub struct StatusOpts {
 }
 
 #[derive(Debug, PartialEq, StructOpt)]
