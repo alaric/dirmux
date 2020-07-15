@@ -10,15 +10,20 @@ use anyhow::Result;
 use std::sync::Arc;
 
 pub fn create_processors(opts: Options) -> Result<(Arc<dyn DirRunner>, Arc<dyn Renderer>)> {
-    let processor: Arc<dyn DirRunner> = match opts.cmd {
-        Subcommands::RawCommand(cmd) => Arc::new(CommandRunner { cmd }),
-        Subcommands::Exec(execcmd) => match execcmd.cmd {
-            crate::options::ExecCmd::RawCommand(cmd) => Arc::new(CommandRunner { cmd }),
+    let processor: Arc<dyn DirRunner> = match &opts.cmd {
+        Subcommands::RawCommand(cmd) => Arc::new(CommandRunner { cmd: cmd.to_vec() }),
+        Subcommands::Exec(execcmd) => match &execcmd.cmd {
+            crate::options::ExecCmd::RawCommand(cmd) => {
+                Arc::new(CommandRunner { cmd: cmd.to_vec() })
+            }
         },
-        Subcommands::Status(opts) => Arc::new(StatusRunner { opts }),
+        Subcommands::Status(opts) => Arc::new(StatusRunner { opts: opts.clone() }),
         _ => bail!("Not a supported command type for directory running processing"),
     };
 
-    let renderer = SimpleSectionRender::default();
-    Ok((processor, Arc::new(renderer)))
+    let renderer: Arc<dyn Renderer> = match &opts.cmd {
+        Subcommands::Status(_) => Arc::new(SimpleSectionRender::single_line()),
+        _ => Arc::new(SimpleSectionRender::default()),
+    };
+    Ok((processor, renderer))
 }

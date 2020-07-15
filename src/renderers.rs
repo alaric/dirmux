@@ -1,27 +1,32 @@
 use crate::CommandMessage;
 use crate::Renderer;
 use anyhow::Result;
+use std::path::PathBuf;
 use termion::{color, style};
 
 #[derive(Default)]
-pub struct SimpleSectionRender {}
+pub struct SimpleSectionRender {
+    single_line: bool,
+}
 
 impl Renderer for SimpleSectionRender {
     fn process(&self, msg: CommandMessage) -> Result<()> {
         match msg {
             CommandMessage::Final(Ok(msg)) => {
+                let newline = if self.single_line { " " } else { "\n" };
                 if msg.output.len() > 0 {
-                    println!(
-                        "{}{}{}:{}",
+                    print!(
+                        "{}{}{}:{}{}",
                         color::Fg(color::Rgb(200, 196, 0)),
                         style::Bold,
-                        msg.dir.display(),
-                        style::Reset
+                        cleanup_path(&msg.dir)?,
+                        style::Reset,
+                        newline,
                     );
                     print!("{}", msg.output);
                 }
                 if msg.error.len() > 0 {
-                    eprintln!("{}:", msg.dir.display());
+                    eprint!("{}:{}", msg.dir.display(), newline);
                     eprint!("{}", msg.error);
                 }
             }
@@ -32,4 +37,27 @@ impl Renderer for SimpleSectionRender {
         }
         Ok(())
     }
+}
+
+impl SimpleSectionRender {
+    pub fn single_line() -> Self {
+        SimpleSectionRender { single_line: true }
+    }
+}
+
+fn cleanup_path(path: &PathBuf) -> Result<String> {
+    let res = match dirs::home_dir() {
+        Some(homedir) => {
+            if path.starts_with(&homedir) {
+                let mut dir = path.strip_prefix(&homedir)?.to_string_lossy().to_string();
+                dir.insert_str(0, "~/");
+                dir
+            } else {
+                path.to_string_lossy().to_string()
+            }
+        }
+        None => path.to_string_lossy().to_string(),
+    };
+
+    Ok(res)
 }

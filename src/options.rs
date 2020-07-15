@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct Options {
     #[structopt(short)]
     pub tag: Option<String>,
@@ -13,7 +13,7 @@ pub struct Options {
     pub cmd: Subcommands,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub enum Subcommands {
     Status(StatusOpts),
     /// Manipulate the tagged directories
@@ -25,7 +25,7 @@ pub enum Subcommands {
     RawCommand(Vec<String>),
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub enum TagSubcommands {
     Add(TagAddOpts),
     Remove(TagRemoveOpts),
@@ -36,35 +36,35 @@ pub enum TagSubcommands {
     Gc,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct StatusOpts {
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct TagAddOpts {
     pub tag: String,
     pub path: Option<PathBuf>,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct TagRemoveOpts {
     pub tag: String,
     pub path: Option<PathBuf>,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct TagOpts {
     #[structopt(subcommand)]
     pub action: TagSubcommands,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct ExecOpts {
     #[structopt(subcommand)]
     pub cmd: ExecCmd,
 }
 
-#[derive(Debug, PartialEq, StructOpt)]
+#[derive(Clone, Debug, PartialEq, StructOpt)]
 pub enum ExecCmd {
     #[structopt(external_subcommand)]
     RawCommand(Vec<String>),
