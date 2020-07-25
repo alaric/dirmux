@@ -1,6 +1,7 @@
 use anyhow::Context;
 use anyhow::Result;
 use dirmux::options::Options;
+use dirmux::styling::set_default_styles;
 use dirmux::CommandMessage;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -10,6 +11,7 @@ use futures::stream::{self, StreamExt};
 #[tokio::main]
 async fn main() -> Result<()> {
     let opts = Options::from_args();
+    set_default_styles();
     let filename = match dirs::home_dir() {
         Some(homedir) => homedir.join(".dirmux.json"),
         None => PathBuf::from("/tmp/").join(".dirmux.json"),

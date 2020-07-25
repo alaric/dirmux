@@ -4,6 +4,8 @@ use crate::CommandMessage;
 use crate::DirRunner;
 use crate::CommandOutput;
 use crate::options::StatusOpts;
+use crate::renderers::cleanup_path;
+use crate::styling::Style;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::task;
 use std::path::PathBuf;
@@ -81,36 +83,49 @@ fn git_status(dir: &PathBuf) -> Result<String> {
         if s.is_conflicted() {
             conflicted_count += 1;
         }
-        //dbg!(i.status());
-        //dbg!(i.path());
     }
 
     let mut output: Vec<String> = vec![];
-    status_fmt(&mut output, "M", modified_count);
-    status_fmt(&mut output, "A", added_count);
-    status_fmt(&mut output, "D", deleted_count);
-    status_fmt(&mut output, "R", renamed_count);
-    status_fmt(&mut output, "T", typechange_count);
-    status_fmt(&mut output, "!", ignored_count);
-    status_fmt(&mut output, "C", conflicted_count);
-    status_fmt(&mut output, "?", unknown_count);
+    let mut char_count = 0;
+    char_count += status_fmt(&mut output, "A", added_count, "git-added");
+    char_count += status_fmt(&mut output, "M", modified_count, "git-modified");
+    char_count += status_fmt(&mut output, "D", deleted_count, "git-deleted");
+    char_count += status_fmt(&mut output, "R", renamed_count, "git-renamed");
+    char_count += status_fmt(&mut output, "T", typechange_count, "git-typechanged");
+    char_count += status_fmt(&mut output, "!", ignored_count, "git-ignored");
+    char_count += status_fmt(&mut output, "C", conflicted_count, "git-conflicted");
+    char_count += status_fmt(&mut output, "?", unknown_count, "git-unknown");
+
     let statuses = output.join(" ");
+    if output.len() > 1 {
+        char_count += output.len() - 1;
+    }
+
     let mut output = String::from("");
     if statuses.is_empty() && shorthand == Some("master") {
         Ok(output)
     }
     else {
-        output.push_str(format!("{:12}", statuses).as_ref());
+        output.push_str(format!("{:>20} ", cleanup_path(dir)?).as_ref());
+        output.push_str(format!("{}", statuses).as_ref());
+        let statuses_width = 12;
+        let padding = statuses_width - std::cmp::min(statuses_width, char_count);
+        output.push_str(format!("{:width$}", "", width = padding).as_ref());
+
         if let Some(s) = shorthand {
             output.push_str(format!(" {:12}", s).as_ref())
         }
+
         output.push('\n');
         Ok(output)
     }
 }
 
-fn status_fmt(output: &mut Vec<String>, suff: &str, count: u32) {
+fn status_fmt(output: &mut Vec<String>, suff: &str, count: u32, style: &str) -> usize {
     if count > 0 {
-        output.push(format!("{}{}", count, suff));
+        let style = Style::id(style);
+        output.push(format!("{}{}{}{}", style.before(), count, suff, style.after()));
+        format!("{}{}", count, suff).len()
     }
+    else {0}
 }

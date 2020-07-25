@@ -5,6 +5,20 @@ use std::path::PathBuf;
 use termion::{color, style};
 
 #[derive(Default)]
+pub struct NullRender {}
+
+impl Renderer for NullRender {
+    fn process(&self, msg: CommandMessage) -> Result<()> {
+        match msg {
+            CommandMessage::Final(Ok(msg)) => print!("{}", msg.output),
+            CommandMessage::Final(Err(msg)) => eprint!("{}", msg),
+            _ => {}
+        };
+        Ok(())
+    }
+}
+
+#[derive(Default)]
 pub struct SimpleSectionRender {
     single_line: bool,
 }
@@ -45,7 +59,7 @@ impl SimpleSectionRender {
     }
 }
 
-fn cleanup_path(path: &PathBuf) -> Result<String> {
+pub fn cleanup_path(path: &PathBuf) -> Result<String> {
     let res = match dirs::home_dir() {
         Some(homedir) => {
             if path.starts_with(&homedir) {

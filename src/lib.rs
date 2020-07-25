@@ -15,6 +15,8 @@ pub mod options;
 pub mod renderers;
 /// Managing the tags
 pub mod tag;
+/// Styling for commands
+pub mod styling;
 
 pub mod cmds;
 

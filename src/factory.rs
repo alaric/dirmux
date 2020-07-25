@@ -22,7 +22,7 @@ pub fn create_processors(opts: Options) -> Result<(Arc<dyn DirRunner>, Arc<dyn R
     };
 
     let renderer: Arc<dyn Renderer> = match &opts.cmd {
-        Subcommands::Status(_) => Arc::new(SimpleSectionRender::single_line()),
+        Subcommands::Status(_) => Arc::new(NullRender::default()),
         _ => Arc::new(SimpleSectionRender::default()),
     };
     Ok((processor, renderer))
