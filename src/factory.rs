@@ -1,4 +1,4 @@
-use crate::cmds::*;
+use crate::cmds::git::*;
 use crate::exec::CommandRunner;
 use crate::options::Options;
 use crate::options::Subcommands;

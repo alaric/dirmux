@@ -11,9 +11,11 @@ lazy_static! {
 
 pub fn set_default_styles() {
     let mut map = STYLES.lock().unwrap();
+    // TODO make this a &str, &str array and data-drive the arguments, ready for embedding in the
+    // json config
     map.insert("git-modified", Style::new().fg(Yellow));
     map.insert("git-added", Style::new().fg(Green));
-    map.insert("git-removed", Style::new().fg(Red));
+    map.insert("git-deleted", Style::new().fg(Red));
     map.insert("git-unknown", Style::new().fg(Blue));
 }
 

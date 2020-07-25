@@ -1,4 +1,3 @@
-mod status;
+pub mod git;
 
-pub use status::StatusRunner;
 
