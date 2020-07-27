@@ -9,9 +9,9 @@ use structopt::StructOpt;
 /// and all have their own help content. However, in addition to these explicit commands dirmux also
 /// succinctly supports running any arbitrary shell command instead of the subcommand. As an
 /// example:
-/// 
-///     $ dirmux du -sh .
-/// 
+///
+/// $ dirmux du -sh .
+///
 /// This will evaluate all the size of all the directories you have tagged.
 #[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct Options {
