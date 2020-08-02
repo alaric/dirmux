@@ -42,6 +42,8 @@ pub enum Subcommands {
     /// changes waiting for a commit.
     Status(StatusOpts),
 
+    Ffmerge(MergeOpts),
+
     /// Manipulate the tagged directories
     ///
     /// This provides a number of subcommands for manipulating which directories are tagged with
@@ -76,6 +78,9 @@ pub enum TagSubcommands {
 /// Test
 #[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct StatusOpts {}
+
+#[derive(Clone, Debug, PartialEq, StructOpt)]
+pub struct MergeOpts {}
 
 #[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct TagAddOpts {
