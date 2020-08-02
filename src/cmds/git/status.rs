@@ -99,7 +99,7 @@ fn git_status(dir: &PathBuf) -> Result<String> {
     }
 
     let mut output = String::from("");
-    if statuses.is_empty() && shorthand == Some("master") {
+    if statuses.is_empty() && (shorthand == Some("master") || shorthand == Some("main")) {
         Ok(output)
     } else {
         output.push_str(format!("{:>20} ", cleanup_path(dir)?).as_ref());

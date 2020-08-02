@@ -34,10 +34,10 @@ summary of the git repositories tagged 'work':
     
 Which will provide an output similar to this:
 
-       ~/projects/dirmux 1M           master
-         ~/projects/blog 1M 3?        master
+       ~/projects/dirmux 1M           main
+         ~/projects/blog 1M 3?        main
               ~/dotfiles 1M           nvim_lsp2
-                 ~/notes 1?           master
+                 ~/notes 1?           main
 
 If the branch is not changed and there are no modified files in the git index or working set, it
 will omit to print the directory.
