@@ -1,5 +1,5 @@
-mod status;
 mod merge;
+mod status;
 
-pub use status::StatusRunner;
 pub use merge::MergeRunner;
+pub use status::StatusRunner;

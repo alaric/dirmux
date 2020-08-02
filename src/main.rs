@@ -3,10 +3,10 @@ use anyhow::Result;
 use dirmux::options::Options;
 use dirmux::styling::set_default_styles;
 use dirmux::CommandMessage;
+use futures::stream::{self, StreamExt};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use tokio::sync::mpsc::unbounded_channel;
-use futures::stream::{self, StreamExt};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -49,9 +49,11 @@ async fn main() -> Result<()> {
     }
 
     tokio::spawn(async move {
-        stream::iter(futs).for_each_concurrent(jobs, |x| async move {
-            x.await;
-        }).await;
+        stream::iter(futs)
+            .for_each_concurrent(jobs, |x| async move {
+                x.await;
+            })
+            .await;
         drop(tx);
     });
 

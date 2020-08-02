@@ -13,10 +13,10 @@ pub mod factory;
 pub mod options;
 /// Render the directory's outputs as text
 pub mod renderers;
-/// Managing the tags
-pub mod tag;
 /// Styling for commands
 pub mod styling;
+/// Managing the tags
+pub mod tag;
 
 pub mod cmds;
 
@@ -63,4 +63,3 @@ impl Renderer for DebugRenderer {
         Ok(())
     }
 }
-

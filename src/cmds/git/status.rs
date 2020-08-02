@@ -1,14 +1,14 @@
-use anyhow::Result;
-use async_trait::async_trait;
-use crate::CommandMessage;
-use crate::DirRunner;
-use crate::CommandOutput;
 use crate::options::StatusOpts;
 use crate::renderers::cleanup_path;
 use crate::styling::Style;
+use crate::CommandMessage;
+use crate::CommandOutput;
+use crate::DirRunner;
+use anyhow::Result;
+use async_trait::async_trait;
+use std::path::PathBuf;
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::task;
-use std::path::PathBuf;
 
 pub struct StatusRunner {
     pub opts: StatusOpts,
@@ -22,41 +22,38 @@ impl DirRunner for StatusRunner {
         _sender: UnboundedSender<CommandMessage>,
     ) -> Result<CommandOutput> {
         let dir_out = dir.clone();
-        let res = task::spawn_blocking(move || {
-            git_status(&dir)
-        }).await?;
+        let res = task::spawn_blocking(move || git_status(&dir)).await?;
 
         match res {
             Ok(s) => Ok(CommandOutput {
-            dir: dir_out,
-            output: s,
-            error: String::from(""),
-        }),
-        Err(e) => Ok(CommandOutput {
-            dir: dir_out,
-            error: e.to_string(),
-            output: String::from(""),
-        }),
+                dir: dir_out,
+                output: s,
+                error: String::from(""),
+            }),
+            Err(e) => Ok(CommandOutput {
+                dir: dir_out,
+                error: e.to_string(),
+                output: String::from(""),
+            }),
         }
     }
 }
 
 fn git_status(dir: &PathBuf) -> Result<String> {
-
     let repo = git2::Repository::open(dir)?;
     let head = repo.head()?;
     let shorthand = head.shorthand().or(Some(""));
     let mut status_options = git2::StatusOptions::new();
     status_options.include_untracked(true);
     let statuses = repo.statuses(Some(&mut status_options))?;
-    let mut modified_count = 0;   // M
-    let mut added_count = 0;      // A
-    let mut deleted_count = 0;    // D
-    let mut renamed_count = 0;    // R
+    let mut modified_count = 0; // M
+    let mut added_count = 0; // A
+    let mut deleted_count = 0; // D
+    let mut renamed_count = 0; // R
     let mut typechange_count = 0; // T
-    let mut ignored_count = 0;    // !
+    let mut ignored_count = 0; // !
     let mut conflicted_count = 0; // C
-    let mut unknown_count = 0;    // ?
+    let mut unknown_count = 0; // ?
     for i in statuses.iter() {
         let s = i.status();
         if s.is_index_new() {
@@ -104,8 +101,7 @@ fn git_status(dir: &PathBuf) -> Result<String> {
     let mut output = String::from("");
     if statuses.is_empty() && shorthand == Some("master") {
         Ok(output)
-    }
-    else {
+    } else {
         output.push_str(format!("{:>20} ", cleanup_path(dir)?).as_ref());
         output.push_str(format!("{}", statuses).as_ref());
         let statuses_width = 12;
@@ -124,8 +120,15 @@ fn git_status(dir: &PathBuf) -> Result<String> {
 fn status_fmt(output: &mut Vec<String>, suff: &str, count: u32, style: &str) -> usize {
     if count > 0 {
         let style = Style::id(style);
-        output.push(format!("{}{}{}{}", style.before(), count, suff, style.after()));
+        output.push(format!(
+            "{}{}{}{}",
+            style.before(),
+            count,
+            suff,
+            style.after()
+        ));
         format!("{}{}", count, suff).len()
+    } else {
+        0
     }
-    else {0}
 }

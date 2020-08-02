@@ -34,14 +34,16 @@ pub struct Options {
 pub enum Subcommands {
     /// Provides a compact git status
     ///
-    /// This subcommand prints a summary of the git status of all the
-    /// directories. This by default will skip printing anything for
-    /// directories that are on their normal branch and have no
-    /// outstanding status items (modified files, untracked changes).
-    /// The goal is to have a quick oversight of all your outstanding
-    /// changes waiting for a commit.
+    /// This subcommand prints a summary of the git status of all the directories. This by default
+    /// will skip printing anything for directories that are on their normal branch and have no
+    /// outstanding status items (modified files, untracked changes).  The goal is to have a quick
+    /// oversight of all your outstanding changes waiting for a commit.
     Status(StatusOpts),
 
+    /// Fast-forward merges your branch from its upstream branch, if possible.
+    ///
+    /// This subcommand will attempt a fast-forward merge for any git repositories which have
+    /// changes to be merged. It will print a message if the merge is not a fast-forward.
     Ffmerge(MergeOpts),
 
     /// Manipulate the tagged directories
@@ -80,7 +82,15 @@ pub enum TagSubcommands {
 pub struct StatusOpts {}
 
 #[derive(Clone, Debug, PartialEq, StructOpt)]
-pub struct MergeOpts {}
+pub struct MergeOpts {
+    /// Only do a dry-run. Do not actually do any merge.
+    #[structopt(short, long)]
+    pub dry: bool,
+
+    /// Print a verbose diffstat.
+    #[structopt(short, long)]
+    pub verbose: bool,
+}
 
 #[derive(Clone, Debug, PartialEq, StructOpt)]
 pub struct TagAddOpts {
