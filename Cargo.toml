@@ -1,8 +1,11 @@
 [package]
 name = "dirmux"
-version = "0.1.0"
-authors = ["Alaric <alaric@doublethink.co.uk>"]
+version = "0.1.1"
+authors = ["Alaric <alaric+cratesio@doublethink.co.uk>"]
 edition = "2018"
+description = "Directory and git repository command running program"
+license = "MIT"
+repository = "https://github.com/alaric/dirmux"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
