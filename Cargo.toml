@@ -6,6 +6,8 @@ edition = "2018"
 description = "Directory and git repository command running program"
 license = "MIT"
 repository = "https://github.com/alaric/dirmux"
+keywords = ["cli", "git", "directories", "repositories"]
+categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

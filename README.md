@@ -11,6 +11,14 @@ keep them all up to date, or have to make cross-cutting changes against all of t
 The dirmux command works from anywhere on the file system, so whenever you want to see status across
 your git repos or check on your TODOs it's easy and fast to do.
 
+## Trying it out
+
+If you have the rust toolchain installed:
+
+    cargo install dirmux
+
+If you want a different package manager, please enter an issue for it.
+
 ## Motivational Examples
 
 This command will run the 'git fetch --all' command against all known directories:
