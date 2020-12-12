@@ -1,6 +1,6 @@
 [package]
 name = "dirmux"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Alaric <alaric+cratesio@doublethink.co.uk>"]
 edition = "2018"
 description = "Directory and git repository command running program"
