@@ -12,12 +12,20 @@ use tokio::sync::mpsc::unbounded_channel;
 async fn main() -> Result<()> {
     let opts = Options::from_args();
     set_default_styles();
-    let filename = match dirs::home_dir() {
+    let filename = match dirs_next::home_dir() {
         Some(homedir) => homedir.join(".dirmux.json"),
         None => PathBuf::from("/tmp/").join(".dirmux.json"),
     };
-    let file = dirmux::dirs::read_file(&filename)
-        .with_context(|| format!("Couldn't read config file: {}", filename.display()))?;
+    let file = match dirmux::dirs::read_file(&filename) {
+        Ok(file) => file,
+        Err(_) => {
+            let default_file = dirmux::dirs::FileFormat::blank();
+            dirmux::dirs::write_file(&default_file, &filename)
+                .with_context(|| format!("Couldn't write config file: {}", filename.display()))?;
+            dirmux::dirs::read_file(&filename)
+                .with_context(|| format!("Couldn't read config file: {}", filename.display()))?
+        }
+    };
 
     // Short circuit tag command
     if let dirmux::options::Subcommands::Tag(tagopts) = &opts.cmd {

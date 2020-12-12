@@ -60,7 +60,7 @@ impl SimpleSectionRender {
 }
 
 pub fn cleanup_path(path: &PathBuf) -> Result<String> {
-    let res = match dirs::home_dir() {
+    let res = match dirs_next::home_dir() {
         Some(homedir) => {
             if path.starts_with(&homedir) {
                 let mut dir = path.strip_prefix(&homedir)?.to_string_lossy().to_string();
