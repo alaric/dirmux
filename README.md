@@ -1,6 +1,6 @@
 # dirmux
 
-![Rust Build Status Badge](https://github.com/alaric/dirmux/workflows/Rust/badge.svg)
+![Rust Build Status Badge](https://github.com/alaric/dirmux/workflows/Rust/badge.svg) [![dependency status](https://deps.rs/repo/github/alaric/dirmux/status.svg)](https://deps.rs/repo/github/alaric/dirmux)
 
 Directory multiplexing program for managing multiple directories at once. With this you are able to
 tag directories and execute commands against them all at once.
